@@ -51,12 +51,12 @@ const createUniqueNumberGenerator = (min, max) => {
 
 const getRandomArrayElement = (array) => array[getRandomPositiveInteger(0, array.length - 1)];
 
-const getRandomElements = (array, elementsCount) => {
+const getRandomElements = (array, elementsCount = array.length) => {
   const newArray = array.slice();
   elementsCount = Math.max(0, Math.min(array.length, elementsCount));
 
   for (let i = 0; i < elementsCount; i++) {
-    const randomIndex = getRandomPositiveInteger(0, array.length);
+    const randomIndex = getRandomPositiveInteger(0, array.length - 1);
     const swap = newArray[i];
 
     newArray[i] = newArray[randomIndex];
