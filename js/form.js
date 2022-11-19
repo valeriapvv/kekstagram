@@ -26,6 +26,10 @@ const closeUpload = (evt) => {
 };
 
 function onEscapeKeydown (evt) {
+  if (evt.target === hashtagsField || evt.target === descriptionField) {
+    return;
+  }
+
   if (evt.key === 'Escape') {
     closeUpload(evt);
   }
@@ -51,6 +55,7 @@ const onImageUpload = () => {
 };
 
 uploadForm.addEventListener('change', onImageUpload);
+
 
 //// fields validation
 const isValidHashtags = () => {
