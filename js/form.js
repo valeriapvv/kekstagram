@@ -1,3 +1,5 @@
+import {isValidLength} from './utils.js';
+
 const page = document.body;
 const forms = document.forms;
 const uploadForm = forms['upload-select-image'];
@@ -76,7 +78,9 @@ const isValidHashtags = () => {
 };
 
 uploadForm.addEventListener('submit', (evt) => {
-  if (!isValidHashtags()) {
+  const isValidFieldValues = isValidHashtags() && isValidLength(descriptionField.value, 140);
+
+  if (!isValidFieldValues) {
     evt.preventDefault();
   }
 });
