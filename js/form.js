@@ -2,8 +2,11 @@ const page = document.body;
 const forms = document.forms;
 const uploadForm = forms['upload-select-image'];
 const uploadWindow = uploadForm.querySelector('.img-upload__overlay');
-const uploadClose = uploadForm.querySelector('#upload-cancel');
+const uploadClose = uploadWindow.querySelector('#upload-cancel');
+const hashtagsField = uploadWindow.querySelector('.text__hashtags');
+const descriptionField = uploadWindow.querySelector('.text__description');
 
+//// open/close modal
 const closeUpload = (evt) => {
   const isPressed = evt.key === ' ' || evt.key === 'Enter';
   const isCloseButtonActive = evt.target === uploadClose && (evt.type === 'click' || isPressed);
@@ -47,6 +50,35 @@ const onImageUpload = () => {
 
 uploadForm.addEventListener('change', onImageUpload);
 
-uploadForm.addEventListener('reset', () => {
-  // console.log('!!! --- FORM WAS CLEANED --- !!!');
+//// fields validation
+const isValidHashtags = () => {
+  const fieldValue = hashtagsField.value
+    .toLowerCase()
+    .replace(/\s+$/, '');
+  const hashtags = Array.from(new Set(fieldValue.split(/\s+/)));
+  const regexp = /^#(\w|\p{L})+$/ui;
+
+  if (!fieldValue) {
+    return true;
+  }
+
+  if (hashtags.length > 5) {
+    return false;
+  }
+
+  for (const hashtag of hashtags) {
+    if (!regexp.test(hashtag) || hashtag.length > 20) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+uploadForm.addEventListener('submit', (evt) => {
+  if (!isValidHashtags()) {
+    evt.preventDefault();
+  }
 });
+
+
