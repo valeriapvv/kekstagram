@@ -3,6 +3,7 @@ import {posts} from './data.js';
 import {getPicture} from './templates.js';
 import {insertElements} from './elements-insert.js';
 import {showPicture, hidePicture} from './big-picture.js';
+import './form.js';
 
 const shuffledPosts = getRandomElements(posts); // перемешает в случайном порядке.
 const picturesContainer = document.querySelector('.pictures');

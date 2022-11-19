@@ -39,8 +39,9 @@ const showPicture = (picture, posts) => {
   } = post;
 
   imageElement.src = url;
-  likesCountElement.textContent = likes;
+  imageElement.alt = description;
   descriptionElement.textContent = description;
+  likesCountElement.textContent = likes;
   commentsCountElement.textContent = comments.length;
 
   addComments(comments);
