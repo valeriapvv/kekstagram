@@ -45,6 +45,7 @@ const setHandlers = (removeInnerHandlers) => {
   const hidePicture = (cb) => {
     cb();
     closeButton.removeEventListener('click', onCloseButtonClick);
+    closeButton.removeEventListener('keyup', onCloseButtonPress);
     bigPicture.removeEventListener('click', onOverlayClick);
     document.removeEventListener('keydown', onEscapeKeydown);
 
@@ -57,8 +58,15 @@ const setHandlers = (removeInnerHandlers) => {
     hidePicture(removeInnerHandlers);
   }
 
+  function onCloseButtonPress(evt) {
+    if (evt.key === ' ' || evt.key === 'Enter') {
+      evt.preventDefault();
+      hidePicture(removeInnerHandlers);
+    }
+  }
+
   function onOverlayClick(evt) {
-    if (evt.target.matches('.overlay')) {
+    if (evt.target === bigPicture) {
       hidePicture(removeInnerHandlers);
     }
   }
@@ -72,6 +80,7 @@ const setHandlers = (removeInnerHandlers) => {
   }
 
   closeButton.addEventListener('click', onCloseButtonClick);
+  closeButton.addEventListener('keyup', onCloseButtonPress);
   bigPicture.addEventListener('click', onOverlayClick);
   document.addEventListener('keydown', onEscapeKeydown);
 };
