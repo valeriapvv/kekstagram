@@ -7,22 +7,22 @@ class CommentsUploadButton {
     addingCommentsCount,
     addComments,
   } = {}) {
-    this.button = button;
-    this.comments = comments;
-    this.commentsCount = comments.length;
-    this.shownCommentsCount = shownCommentsCount;
-    this.addingCommentsCount = addingCommentsCount;
-    this.initialCommentsCount = initialCommentsCount;
-    this.addComments = addComments;
+    this._button = button;
+    this._comments = comments;
+    this._commentsCount = comments.length;
+    this._shownCommentsCount = shownCommentsCount;
+    this._addingCommentsCount = addingCommentsCount;
+    this._initialCommentsCount = initialCommentsCount;
+    this._addComments = addComments;
   }
 
   _onClick = () => {
-    if (this.shownCommentsCount <= this.commentsCount) {
-      const firstIndex = this.shownCommentsCount;
-      const lastIndex = this.shownCommentsCount + this.addingCommentsCount;
-      this.shownCommentsCount += this.addingCommentsCount;
+    if (this._shownCommentsCount <= this._commentsCount) {
+      const firstIndex = this._shownCommentsCount;
+      const lastIndex = firstIndex + this._addingCommentsCount;
+      this._shownCommentsCount = lastIndex;
 
-      this.addComments(this.comments.slice(firstIndex, lastIndex));
+      this._addComments(this._comments.slice(firstIndex, lastIndex));
       this.refreshState();
     }
   };
@@ -30,26 +30,26 @@ class CommentsUploadButton {
   refreshState = () => {
     this._setHiddenCommentsCount();
 
-    if (this.hiddenCommentsCount <= 0) {
+    if (this._hiddenCommentsCount <= 0) {
       this.setHidden();
       return;
     }
 
-    if (this.shownCommentsCount <= this.initialCommentsCount) {
+    if (this._shownCommentsCount <= this._initialCommentsCount) {
       this._setShown();
     }
   };
 
-  _setHiddenCommentsCount = () => this.hiddenCommentsCount = this.commentsCount - this.shownCommentsCount;
+  _setHiddenCommentsCount = () => this._hiddenCommentsCount = this._commentsCount - this._shownCommentsCount;
 
   _setShown = () => {
-    this.button.addEventListener('click', this._onClick);
-    this.button.hidden = false;
+    this._button.addEventListener('click', this._onClick);
+    this._button.hidden = false;
   };
 
   setHidden = () => {
-    this.button.removeEventListener('click', this._onClick);
-    this.button.hidden = true;
+    this._button.removeEventListener('click', this._onClick);
+    this._button.hidden = true;
   }
 };
 

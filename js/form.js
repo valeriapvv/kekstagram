@@ -1,28 +1,24 @@
 import {isValidLength} from './utils.js';
 
 const page = document.body;
-const forms = document.forms;
-const uploadForm = forms['upload-select-image'];
+const uploadForm = document.forms['upload-select-image'];
 const uploadWindow = uploadForm.querySelector('.img-upload__overlay');
 const uploadClose = uploadWindow.querySelector('#upload-cancel');
 const hashtagsField = uploadWindow.querySelector('.text__hashtags');
 const descriptionField = uploadWindow.querySelector('.text__description');
 
 //// open/close modal
-const closeUpload = (evt) => {
-  const isPressed = evt.key === ' ' || evt.key === 'Enter';
-  const isCloseButtonActive = evt.target === uploadClose && (evt.type === 'click' || isPressed);
-
-  if (!isCloseButtonActive) {
-    uploadForm.reset();
-  }
+const closeUpload = () => {
+  uploadForm.reset();
 
   uploadWindow.classList.add('hidden');
   page.classList.remove('modal-open');
 
   document.removeEventListener('keydown', onEscapeKeydown);
+  uploadWindow.removeEventListener('click', onOverlayClick);
   uploadClose.removeEventListener('click', onCloseClick);
   uploadClose.removeEventListener('keyup', onClosePress);
+  uploadForm.removeEventListener('submit', onSubmit);
 };
 
 function onEscapeKeydown (evt) {
@@ -31,31 +27,27 @@ function onEscapeKeydown (evt) {
   }
 
   if (evt.key === 'Escape') {
-    closeUpload(evt);
+    closeUpload();
+  }
+}
+
+function onOverlayClick (evt) {
+  if (evt.target === uploadWindow) {
+    closeUpload();
   }
 }
 
 function onCloseClick (evt) {
-  closeUpload(evt);
+  evt.preventDefault();
+  closeUpload();
 }
 
 function onClosePress (evt) {
   if (evt.key === ' ' || evt.key === 'Enter') {
-    closeUpload(evt);
+    evt.preventDefault();
+    closeUpload();
   }
 }
-
-const onImageUpload = () => {
-  uploadWindow.classList.remove('hidden');
-  page.classList.add('modal-open');
-
-  document.addEventListener('keydown', onEscapeKeydown);
-  uploadClose.addEventListener('click', onCloseClick);
-  uploadClose.addEventListener('keyup', onClosePress);
-};
-
-uploadForm.addEventListener('change', onImageUpload);
-
 
 //// fields validation
 const isValidHashtags = () => {
@@ -74,7 +66,9 @@ const isValidHashtags = () => {
   }
 
   for (const hashtag of hashtags) {
-    if (!regexp.test(hashtag) || hashtag.length > 20) {
+    const isValidHashtag = regexp.test(hashtag) && isValidLength(hashtag, 20);
+
+    if (!isValidHashtag) {
       return false;
     }
   }
@@ -82,12 +76,30 @@ const isValidHashtags = () => {
   return true;
 };
 
-uploadForm.addEventListener('submit', (evt) => {
+function onSubmit(evt) {
   const isValidFieldValues = isValidHashtags() && isValidLength(descriptionField.value, 140);
 
   if (!isValidFieldValues) {
     evt.preventDefault();
   }
-});
+}
+
+// form activation
+const onImageUpload = () => {
+  uploadWindow.classList.remove('hidden');
+  page.classList.add('modal-open');
+
+  uploadWindow.addEventListener('click', onOverlayClick);
+  document.addEventListener('keydown', onEscapeKeydown);
+  uploadClose.addEventListener('click', onCloseClick);
+  uploadClose.addEventListener('keyup', onClosePress);
+  uploadForm.addEventListener('submit', onSubmit);
+};
+
+const setUploadFormHandlers = () => {
+  uploadForm.addEventListener('change', onImageUpload);
+};
+
+export {setUploadFormHandlers};
 
 

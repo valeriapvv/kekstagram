@@ -76,8 +76,7 @@ const setHandlers = (removeInnerHandlers) => {
   document.addEventListener('keydown', onEscapeKeydown);
 };
 
-const showPicture = (picture, posts) => {
-  const post = findPost(picture, posts);
+const fillPicture = (post) => {
   const {
     url,
     likes,
@@ -85,7 +84,6 @@ const showPicture = (picture, posts) => {
     description,
   } = post;
 
-  //// Вынести заполнение данными в отдельную функцию
   const commentsCount = comments.length;
 
   imageElement.src = url;
@@ -96,8 +94,15 @@ const showPicture = (picture, posts) => {
   commentsList.textContent = '';
 
   addComments(comments.slice(0, INITIAL_COMMENTS_COUNT));
+};
 
-  const shownCommentsCount = Math.min(commentsCount, INITIAL_COMMENTS_COUNT);
+const showPicture = (picture, posts) => {
+  const post = findPost(picture, posts);
+  const {comments} = post;
+
+  fillPicture(post);
+
+  const shownCommentsCount = Math.min(comments.length, INITIAL_COMMENTS_COUNT);
 
   const uploadButton = new CommentsUploadButton({
     button: commentsLoader,

@@ -3,7 +3,7 @@ import {posts} from './data.js';
 import {getPicture} from './templates.js';
 import {insertElements} from './elements-insert.js';
 import {showPicture} from './big-picture.js';
-import './form.js';
+import {setUploadFormHandlers} from'./form.js';
 
 const shuffledPosts = getRandomElements(posts); // перемешает в случайном порядке.
 const picturesContainer = document.querySelector('.pictures');
@@ -23,3 +23,6 @@ const onPictureClick = (evt) => {
 };
 
 picturesContainer.addEventListener('click', onPictureClick);
+
+// активация формы загрузки изображения
+setUploadFormHandlers();
