@@ -72,6 +72,8 @@ const createCounterGenerator = () => {
   return () => ++counter;
 };
 
+const findElementById = (list, id) => list.find((element) => element.id === id);
+
 export {
   isValidLength,
   getRandomPositiveInteger,
@@ -79,4 +81,5 @@ export {
   getRandomArrayElement,
   getRandomElements,
   createCounterGenerator,
+  findElementById,
 };

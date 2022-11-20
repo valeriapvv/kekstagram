@@ -4,6 +4,7 @@ import {
   getRandomArrayElement,
   getRandomElements,
   createCounterGenerator,
+  findElementById,
 } from './utils.js';
 
 // Константы
@@ -26,14 +27,13 @@ const TOTAL_COMMENTS_COUNT = 250;
 const getPostId = createCounterGenerator();
 const getCommentId = createCounterGenerator();
 const getRandomCommentId = createUniqueNumberGenerator(1, TOTAL_COMMENTS_COUNT);
-const getCommentById = (list, id) => list.find((comment) => comment.id === id);
 
 const getRandomComments = (commentsList) => {
   const commentsCount = getRandomPositiveInteger(0, 10);
 
   const randomComments = Array.from({length: commentsCount}, () => {
     const randomId = getRandomCommentId();
-    const comment = getCommentById(commentsList, randomId) ?? 'Неопознанный комментарий';
+    const comment = findElementById(commentsList, randomId) ?? 'Неопознанный комментарий';
     return comment;
   });
 
