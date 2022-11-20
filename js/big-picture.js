@@ -1,5 +1,6 @@
 import {CommentsUploadButton} from './comments-upload-button.js';
 import {findElementById} from './utils.js';
+
 const INITIAL_COMMENTS_COUNT = 5;
 const UPLOADING_COMMENTS_COUNT = 5;
 
@@ -11,6 +12,8 @@ const commentsCountElement =  bigPicture.querySelector('.comments-count');
 const commentsList = bigPicture.querySelector('.social__comments');
 const commentItem = commentsList.querySelector('.social__comment');
 const commentsLoader = bigPicture.querySelector('.comments-loader');
+const commentField = bigPicture.querySelector('.social__footer-text');
+const closeButton = bigPicture.querySelector('.big-picture__cancel');
 
 const findPost = (picture, posts) => {
   const id = parseInt(picture.dataset.pictureId, 10);
@@ -37,6 +40,42 @@ const addComments = (comments) => {
   commentsList.append(documentFragment);
 };
 
+
+const setHandlers = (removeInnerHandlers) => {
+  const hidePicture = (cb) => {
+    cb();
+    closeButton.removeEventListener('click', onCloseButtonClick);
+    bigPicture.removeEventListener('click', onOverlayClick);
+    document.removeEventListener('keydown', onEscapeKeydown);
+
+    commentField.value = '';
+    bigPicture.classList.add('hidden');
+  };
+
+  function onCloseButtonClick(evt) {
+    evt.preventDefault();
+    hidePicture(removeInnerHandlers);
+  }
+
+  function onOverlayClick(evt) {
+    if (evt.target.matches('.overlay')) {
+      hidePicture(removeInnerHandlers);
+    }
+  }
+
+  function onEscapeKeydown(evt) {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+
+      hidePicture(removeInnerHandlers);
+    }
+  }
+
+  closeButton.addEventListener('click', onCloseButtonClick);
+  bigPicture.addEventListener('click', onOverlayClick);
+  document.addEventListener('keydown', onEscapeKeydown);
+};
+
 const showPicture = (picture, posts) => {
   const post = findPost(picture, posts);
   const {
@@ -46,6 +85,7 @@ const showPicture = (picture, posts) => {
     description,
   } = post;
 
+  //// Вынести заполнение данными в отдельную функцию
   const commentsCount = comments.length;
 
   imageElement.src = url;
@@ -69,14 +109,11 @@ const showPicture = (picture, posts) => {
   });
   uploadButton.refreshState();
 
-  bigPicture.classList.remove('hidden');
-};
+  setHandlers(uploadButton.setHidden);
 
-const hidePicture = () => {
-  bigPicture.classList.add('hidden');
+  bigPicture.classList.remove('hidden');
 };
 
 export {
   showPicture,
-  hidePicture,
 };
