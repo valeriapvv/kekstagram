@@ -8,6 +8,7 @@ const bigPicture = document.querySelector('.big-picture');
 const imageElement = bigPicture.querySelector('.big-picture__img > img');
 const likesCountElement = bigPicture.querySelector('.likes-count');
 const descriptionElement = bigPicture.querySelector('.social__caption');
+const shownCommentsCountElement = bigPicture.querySelector('.comments-shown-count');
 const commentsCountElement =  bigPicture.querySelector('.comments-count');
 const commentsList = bigPicture.querySelector('.social__comments');
 const commentItem = commentsList.querySelector('.social__comment');
@@ -100,9 +101,13 @@ const fillPicture = (post) => {
   descriptionElement.textContent = description;
   likesCountElement.textContent = likes;
   commentsCountElement.textContent = commentsCount;
-  commentsList.textContent = '';
 
+  commentsList.textContent = '';
   addComments(comments.slice(0, INITIAL_COMMENTS_COUNT));
+};
+
+const setShownCommentsCount = (shownCommentsCount) => {
+  shownCommentsCountElement.textContent = shownCommentsCount;
 };
 
 const showPicture = (picture, posts) => {
@@ -112,6 +117,7 @@ const showPicture = (picture, posts) => {
   fillPicture(post);
 
   const shownCommentsCount = Math.min(comments.length, INITIAL_COMMENTS_COUNT);
+  setShownCommentsCount(shownCommentsCount);
 
   const uploadButton = new CommentsUploadButton({
     button: commentsLoader,
@@ -120,6 +126,7 @@ const showPicture = (picture, posts) => {
     addingCommentsCount: UPLOADING_COMMENTS_COUNT,
     initialCommentsCount: INITIAL_COMMENTS_COUNT,
     addComments,
+    setShownCommentsCount,
   });
   uploadButton.refreshState();
 

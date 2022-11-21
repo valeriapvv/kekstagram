@@ -6,6 +6,7 @@ class CommentsUploadButton {
     initialCommentsCount,
     addingCommentsCount,
     addComments,
+    setShownCommentsCount,
   } = {}) {
     this._button = button;
     this._comments = comments;
@@ -14,6 +15,7 @@ class CommentsUploadButton {
     this._addingCommentsCount = addingCommentsCount;
     this._initialCommentsCount = initialCommentsCount;
     this._addComments = addComments;
+    this._setShownCommentsCount = setShownCommentsCount;
   }
 
   _onClick = () => {
@@ -23,6 +25,10 @@ class CommentsUploadButton {
       this._shownCommentsCount = lastIndex;
 
       this._addComments(this._comments.slice(firstIndex, lastIndex));
+      this._setShownCommentsCount(
+        Math.min(this._shownCommentsCount, this._commentsCount)
+      );
+
       this.refreshState();
     }
   };
