@@ -6,8 +6,9 @@ const uploadWindow = uploadForm.querySelector('.img-upload__overlay');
 const uploadClose = uploadWindow.querySelector('#upload-cancel');
 const textFieldsContainer = uploadWindow.querySelector('.img-upload__text');
 const hashtagsField = textFieldsContainer.querySelector('.text__hashtags');
-const descriptionField = textFieldsContainer.querySelector('.text__description');
+const commentField = textFieldsContainer.querySelector('.text__description');
 const fileUploadInput = uploadForm.querySelector('#upload-file');
+let errorElement;
 
 const pristine = new Pristine(uploadForm, {
   // class of the parent element where the error/success class is added
@@ -23,9 +24,11 @@ const pristine = new Pristine(uploadForm, {
 });
 
 const setErrorMessageStyles = () => {
-  const errorElement = textFieldsContainer.querySelector('.pristine-error');
+  errorElement = textFieldsContainer.querySelector('.pristine-error');
 
   errorElement.style.position = 'absolute';
+  errorElement.style.left = '50%';
+  errorElement.style.transform = 'translateX(-50%)';
   errorElement.style.maxHeight = '30px';
   errorElement.style.fontSize = '14px';
   errorElement.style.color = 'tomato';
@@ -33,11 +36,13 @@ const setErrorMessageStyles = () => {
 
 //// open/close modal
 const closeUpload = () => {
+  pristine.reset();
   uploadForm.reset();
 
   uploadWindow.classList.add('hidden');
   page.classList.remove('modal-open');
 
+  cancelFieldsFocusHandler(textFieldsContainer);
   document.removeEventListener('keydown', onEscapeKeydown);
   uploadWindow.removeEventListener('click', onOverlayClick);
   uploadClose.removeEventListener('click', onCloseClick);
@@ -46,7 +51,7 @@ const closeUpload = () => {
 };
 
 function onEscapeKeydown (evt) {
-  if (evt.target === hashtagsField || evt.target === descriptionField) {
+  if (evt.target === hashtagsField || evt.target === commentField) {
     return;
   }
 
@@ -131,17 +136,77 @@ pristine.addValidator(
   hashtagsField,
   isValidHashtags,
   () => {
-    setTimeout(setErrorMessageStyles, 0);
+    if (!errorElement) {
+      setTimeout(setErrorMessageStyles, 0);
+    }
+
     return hashtagsError.message;
+  },
+  2,
+);
+
+const commentFieldErrorMessage = 'Комментарий должен иметь длину не более 140 символов';
+
+pristine.addValidator(
+  commentField,
+  (value) => isValidLength(value, 140),
+  () => {
+    if (!errorElement) {
+      setTimeout(setErrorMessageStyles, 0);
+    }
+
+    return commentFieldErrorMessage;
   },
 );
 
-// Проверка на наличие файла в fileUploadInput (сделать)
+const isValidField = (field) => {
+  const errors = pristine.getErrors(field);
 
-function onSubmit(evt) {
-  if (!pristine.validate() || !isValidLength(descriptionField.value, 140)) {
-    evt.preventDefault();
+  if (errors.length) {
+    return false;
   }
+
+  return true;
+};
+
+function  onFocusin (evt) {
+  const element = evt.target;
+
+  if (element.matches('input') || element.matches('textarea')) {
+    pristine.validate(element);
+  }
+}
+
+function setFieldsFocusHandler (fieldsContainer) {
+  fieldsContainer.addEventListener('focusin', onFocusin);
+}
+
+function cancelFieldsFocusHandler (fieldsContainer) {
+  fieldsContainer.removeEventListener('focusin', onFocusin);
+}
+
+// Проверка на наличие файла в fileUploadInput (сделать)
+function onSubmit(evt) {
+  if (!fileUploadInput.value) {
+    evt.preventDefault();
+    throw new Error('Нет файлов в поле загрузки файлов');
+  }
+
+  if (!pristine.validate()) {
+    evt.preventDefault();
+
+    if (!isValidField(hashtagsField)) {
+      hashtagsField.focus();
+      return;
+    }
+
+    if (!isValidField(commentField)) {
+      commentField.focus();
+      return;
+    }
+  }
+
+  pristine.reset();
 }
 
 // form activation
@@ -149,6 +214,7 @@ const onImageUpload = () => {
   uploadWindow.classList.remove('hidden');
   page.classList.add('modal-open');
 
+  setFieldsFocusHandler(textFieldsContainer);
   uploadWindow.addEventListener('click', onOverlayClick);
   document.addEventListener('keydown', onEscapeKeydown);
   uploadClose.addEventListener('click', onCloseClick);
@@ -159,6 +225,12 @@ const onImageUpload = () => {
 const setUploadFormHandlers = () => {
   uploadForm.addEventListener('change', onImageUpload);
 };
+
+////
+// console.log('код модуля')
+// uploadWindow.classList.remove('hidden');
+// page.classList.add('modal-open');
+// uploadForm.addEventListener('change', onImageUpload);
 
 export {setUploadFormHandlers};
 
